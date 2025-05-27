@@ -122,12 +122,16 @@ class DecisionStump(BaseEstimator):
         sorted_indices = np.argsort(values)
         sorted_values = values[sorted_indices]
         sorted_labels = labels[sorted_indices]
+        # insert to the sorted values min and max values to ensure that the threshold can be set to these values
+        sorted_values = np.insert(sorted_values, 0, sorted_values[0] - 1)
+        sorted_values = np.append(sorted_values, sorted_values[-1] + 1)
 
         # Initialize the best threshold and error
         best_thr, best_thr_err = None, np.inf
 
         # Iterate over all possible thresholds
         for i in range(len(sorted_values) - 1):
+
             # Calculate the threshold as the average of two consecutive values
             thr = (sorted_values[i] + sorted_values[i + 1]) / 2
 

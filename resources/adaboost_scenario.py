@@ -217,6 +217,6 @@ def fit_and_evaluate_adaboost(noise, n_learners=250, train_size=5000, test_size=
 
 
 if __name__ == '__main__':
-    np.random.seed(0)
+    np.random.seed(12)
     fit_and_evaluate_adaboost(noise=0.0, n_learners=250, train_size=5000, test_size=500)
     fit_and_evaluate_adaboost(noise=0.4, n_learners=250, train_size=5000, test_size=500)

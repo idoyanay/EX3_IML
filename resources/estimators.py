@@ -33,7 +33,8 @@ class LinearRegression(BaseEstimator):
         loss : float
             Performance under MSE loss function
         """
-        raise NotImplementedError()
+        predictions = self._predict(X)
+        return np.mean((predictions - y) ** 2)
 
 
 class Lasso(BaseEstimator):
@@ -64,7 +65,8 @@ class Lasso(BaseEstimator):
         loss : float
             Performance under MSE loss function
         """
-        raise NotImplementedError()
+        predictions = self._predict(X)
+        return np.mean((predictions - y) ** 2)
 
 
 class RidgeRegression(BaseEstimator):
@@ -72,6 +74,11 @@ class RidgeRegression(BaseEstimator):
     Ridge Regression Estimator
 
     Solving Ridge Regression optimization problem
+    notes:
+        Implement the RidgeRegression class in estimators.py as specified in the class documentation. You are not allowed to use the scikit-learn implementation of Ridge Regression.
+        • Note that in RidgeRegression, you should provide an option to include an intercept (a
+        boolean argument in the constructor), but the regularization should not be applied to the
+        intercept term
     """
 
     def __init__(self, lam: float, include_intercept: bool = True):
@@ -122,7 +129,18 @@ class RidgeRegression(BaseEstimator):
         -----
         Fits model with or without an intercept depending on value of `self.include_intercept_`
         """
-        raise NotImplementedError()
+        n_samples, n_features = X.shape
+        if self.include_intercept_:
+            X = np.hstack((np.ones((n_samples, 1)), X))
+            n_features += 1
+
+        # Compute the closed-form solution for Ridge Regression
+        I = np.eye(n_features)
+        if self.include_intercept_: # not considering regularization for intercept term
+            I[0, 0] = 0
+        XTX = X.T @ X + self.lam_ * I
+        XTy = X.T @ y
+        self.coefs_ = np.linalg.inv(XTX) @ XTy
 
     def _predict(self, X: np.ndarray) -> np.ndarray:
         """
@@ -138,7 +156,10 @@ class RidgeRegression(BaseEstimator):
         responses : ndarray of shape (n_samples, )
             Predicted responses of given samples
         """
-        raise NotImplementedError()
+        if self.include_intercept_:
+            X = np.hstack((np.ones((X.shape[0], 1)), X))
+            
+        return X @ self.coefs_
 
     def _loss(self, X: np.ndarray, y: np.ndarray) -> float:
         """
@@ -157,6 +178,7 @@ class RidgeRegression(BaseEstimator):
         loss : float
             Performance under MSE loss function
         """
-        raise NotImplementedError()
+        predictions = self._predict(X)
+        return np.mean((predictions - y) ** 2)
 
 
